@@ -1,46 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
 
-class ViewEmployeeComponent extends React.Component {
-  constructor(props) {
-    super(props);
+const ViewEmployeeComponent = (props) => {
+  const { id } = useParams(props.id);
+  const [employee, setEmployee] = useState({});
 
-    this.state = {
-      id: this.props.match.params.id,
-      employee: {},
-    };
-  }
-
-  componentDidMount() {
-    EmployeeService.getEmployeeById(this.state.id).then((res) => {
-      this.setState({ employee: res.data });
+  useEffect(() => {
+    EmployeeService.getEmployeeById(id).then((res) => {
+      setEmployee(res.data.employee);
     });
-  }
+  });
 
-  render() {
-    return (
-      <div>
-        <br></br>
-        <div className="card col-md-6 offset-md-3">
-          <h3 className="text-center">View Employee Details</h3>
-          <div className="card-body">
-            <div className="row">
-              <label>Employee First Name:</label>
-              <div>{this.state.employee.firstName}</div>
-            </div>
+  return (
+    <>
+      <br></br>
+      <div className="card col-md-6 offset-md-3">
+        <h3 className="text-center">View Employee Details</h3>
+        <div className="card-body">
+          <div className="row">
+            <label className="row-">Employee First Name:</label>
+            <span>{employee.firstName}</span>
           </div>
           <div className="row">
             <label>Employee Last Name:</label>
-            <div>{this.state.employee.lastName}</div>
+            <span>{employee.lastName}</span>
           </div>
           <div className="row">
             <label>Employee Email ID:</label>
-            <div>{this.state.employee.emailId}</div>
+            <span>{employee.emailId}</span>
           </div>
         </div>
       </div>
-    );
-  }
-}
+    </>
+  );
+};
 
 export default ViewEmployeeComponent;
