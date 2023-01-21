@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
 
 const ViewEmployeeComponent = (props) => {
   const { id } = useParams(props.id);
   const [employee, setEmployee] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     EmployeeService.getEmployeeById(id).then((res) => {
       setEmployee(res.data.employee);
     });
   }, [id]);
+
+  const cancel = () => {
+    navigate("/employees");
+  };
 
   return (
     <>
@@ -30,6 +35,13 @@ const ViewEmployeeComponent = (props) => {
             <label>Employee Email ID:</label>
             <span>{employee.emailId}</span>
           </div>
+          <button
+            style={{ margin: "0 100px" }}
+            className="btn btn-outline-danger"
+            onClick={cancel}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </>
