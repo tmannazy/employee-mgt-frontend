@@ -33,7 +33,7 @@ const CreateEmploymentComponent = (props) => {
         navigate("/employees");
       });
     } else {
-      EmployeeService.updateEmployee(employee, id).then(() => {
+      EmployeeService.updateEmployee(id, employee).then(() => {
         navigate("/employees");
       });
     }
