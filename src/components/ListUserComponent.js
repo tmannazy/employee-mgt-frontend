@@ -24,7 +24,7 @@ const ListEmployeeComponent = () => {
     EmployeeService.getEmployees().then((res) => {
       setEmployees(res.data);
     });
-  });
+  }, [setEmployees]);
 
   const addEmployee = () => {
     navigate(`/add-employee/_add`);

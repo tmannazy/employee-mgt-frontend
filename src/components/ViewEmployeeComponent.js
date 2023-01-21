@@ -10,7 +10,7 @@ const ViewEmployeeComponent = (props) => {
     EmployeeService.getEmployeeById(id).then((res) => {
       setEmployee(res.data.employee);
     });
-  });
+  }, [id]);
 
   return (
     <>

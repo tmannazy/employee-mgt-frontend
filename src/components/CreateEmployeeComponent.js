@@ -1,134 +1,113 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
 
-class CreateEmploymentComponent extends React.Component {
-  constructor(props) {
-    super(props);
+const CreateEmploymentComponent = (props) => {
+  const { id } = useParams(props.id);
+  const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [emailId, setEmailId] = useState("");
 
-    this.state = {
-      id: this.props.match.params.id,
-      firstName: "",
-      lastName: "",
-      emailId: "",
-    };
-
-    this.changeFirstNameHandler = this.changeFirstNameHandler.bind(this);
-    this.changeLastNameHandler = this.changeLastNameHandler.bind(this);
-    this.changeEmailHandler = this.changeEmailHandler.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.state.id === "add") return;
-    else {
-      EmployeeService.getEmployeeById(this.state.id).then((res) => {
-        let employee = res.data;
-        this.setState({
-          firstName: employee.firstName,
-          lastName: employee.lastName,
-          emailId: employee.emailId,
-        });
+  useEffect(() => {
+    if (id !== "_add") {
+      EmployeeService.getEmployeeById(id).then((res) => {
+        const employee = res.data.employee;
+        setEmailId(employee.emailId);
+        setFirstName(employee.firstName);
+        setLastName(employee.lastName);
       });
     }
-  }
+  }, [id]);
 
-  saveOrUpdateEmployee = (e) => {
+  const saveOrUpdateEmployee = (e) => {
     e.preventDefault();
-    let employee = {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      emailId: this.state.emailId,
+    const employee = {
+      firstName,
+      lastName,
+      emailId,
     };
 
-    if (this.state.id === "_add") {
-      EmployeeService.createEmployee(employee).then((res) => {
-        this.props.history.push("/employees");
+    if (id === "_add") {
+      EmployeeService.createEmployee(employee).then(() => {
+        navigate("/employees");
       });
     } else {
-      EmployeeService.updateEmployee(employee, this.state.id).then((res) => {
-        this.props.history.push("/employees");
+      EmployeeService.updateEmployee(employee, id).then(() => {
+        navigate("/employees");
       });
     }
   };
 
-  changeFirstNameHandler = (event) =>
-    this.setState({ firstName: event.target.value });
+  const changeFirstNameHandler = (event) => setFirstName(event.target.value);
 
-  changeLastNameHandler = (event) =>
-    this.setState({ lastName: event.target.value });
+  const changeLastNameHandler = (event) => setLastName(event.target.value);
 
-  changeEmailHandler = (event) =>
-    this.setState({ emailId: event.target.value });
+  const changeEmailHandler = (event) => setEmailId(event.target.value);
 
-  cancel() {
-    this.props.history.push("/employees");
+  function cancel() {
+    navigate("/employees");
   }
 
-  getTitle() {
-    if (this.state.id === "_add")
-      return <h3 className="text-center">Add Employee</h3>;
+  const getTitle = () => {
+    if (id === "_add") return <h3 className="text-center">Add Employee</h3>;
     else return <h3 className="text-center">Update Employee</h3>;
-  }
+  };
 
-  render() {
-    return (
-      <div>
-        <br></br>
-        <div className="row">
-          <div className="card col-md-6 offset-md-3 offset-md-3">
-            {this.getTitle()}
-          </div>
-          <div className="card-body">
-            <form>
-              <div className="form-group">
-                <label>First Name:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="First Name"
-                  name="firstName"
-                  value={this.state.firstName}
-                />
-              </div>
-
-              <label>Last Name:</label>
+  return (
+    <div>
+      <br></br>
+      <div className="row">
+        <div className="card col-md-6 offset-md-3 offset-md-3">{getTitle}</div>
+        <div className="card-body">
+          <form>
+            <div className="form-group">
+              <label>First Name:</label>
               <input
                 type="text"
                 className="form-control"
-                placeholder="Last Name"
-                name="lastName"
-                value={this.state.lastName}
-                onChange={this.changeFirstNameHandler}
+                placeholder="First Name"
+                name="firstName"
+                value={firstName}
+                onChange={changeFirstNameHandler}
               />
+            </div>
 
-              <label>Email ID:</label>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="abc@example.com"
-                name="emailId"
-                value={this.state.emailId}
-                onChange={this.changeEmailHandler}
-              />
-            </form>
+            <label>Last Name:</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Last Name"
+              name="lastName"
+              value={lastName}
+              onChange={changeLastNameHandler}
+            />
 
-            <button
-              className="btn btn-success"
-              onClick={this.saveOrUpdateEmployee}
-            >
-              Save
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={this.cancel.bind(this)}
-              style={{ marginLeft: "10px" }}
-            >
-              Cancel
-            </button>
-          </div>
+            <label>Email ID:</label>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="abc@example.com"
+              name="emailId"
+              value={emailId}
+              onChange={changeEmailHandler}
+            />
+          </form>
+
+          <button className="btn btn-success" onClick={saveOrUpdateEmployee}>
+            Save
+          </button>
+          <button
+            className="btn btn-danger"
+            onClick={cancel}
+            style={{ marginLeft: "10px" }}
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default CreateEmploymentComponent;
